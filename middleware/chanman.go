@@ -16,7 +16,7 @@ const (
 	CHANNEL_MANAGER_STATUS_CLOSED        ChannelManagerStatus = 2 // 已关闭状态。
 )
 
-var defaultChanLen = 1
+var defaultChanLen uint = 1
 
 // 表示状态代码与状态名称之间的映射关系的字典
 var statusNameMap = map[ChannelManagerStatus]string{
