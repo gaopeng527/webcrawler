@@ -1,8 +1,8 @@
 package downloader
 
 import (
-	"webcrawler/base"
 	"net/http"
+	"webcrawler/base"
 	"webcrawler/middleware"
 )
 
@@ -11,14 +11,14 @@ var downloaderIdGenerator middleware.IdGenerator = middleware.NewIdGenerator()
 
 // 网页下载器的接口类型
 type PageDownloader interface {
-	Id() uint32 // 获得ID
+	Id() uint32                                        // 获得ID
 	Download(req base.Request) (*base.Response, error) // 根据请求下载网页并返回响应
 }
 
 // 网页下载器的实现类型
 type myPageDownloader struct {
 	httpClient http.Client // HTTP客户端
-	id uint32  // ID
+	id         uint32      // ID
 }
 
 // 生成并返回ID
@@ -33,7 +33,7 @@ func NewPageDownloader(client *http.Client) PageDownloader {
 		client = &http.Client{}
 	}
 	return &myPageDownloader{
-		id: id,
+		id:         id,
 		httpClient: *client,
 	}
 }
