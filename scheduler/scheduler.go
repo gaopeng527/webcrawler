@@ -36,24 +36,24 @@ type SchedSummary interface {
 	Same(other SchedSummary) bool // 判断是否与另一份摘要信息相同
 }
 
-// 调度器的接口类型
+// 调度器的接口类型。
 type Scheduler interface {
-	// 启动调度器
-	// 调用该方法会使调度器创建和初始化各个组件。在此之后，调度器会激活爬取流程的执行
-	// 参数channelLen被用来指定数据传输通道的长度
-	// 参数poolSize被用来设定网页下载器池和分析器池的容量
-	// 参数crawlDepth代表了需要被爬取的网页的最大深度值，深度大于此值的网页会被忽略
-	// 参数httpClientGenerator代表的是被用来生成HTTP客户端的函数
-	// 参数respParsers的值应为分析器所需的被用来解析HTTP响应的函数的序列
-	// 参数itemProcessors的值应为需要被置入条目处理管道中的条目处理器的序列
-	// 参数firstHttpReq即代表首次请求，调度器会以此为起始点开始执行爬取流程
-	Start(channelLen uint,
-		poolSize uint32,
-		crawlDepth uint32,
-		httpClientGenerator GenHttpClient,
-		respParsers []analyzer.ParseResponse,
-		itemProcessors []itempipeline.ProcessItem,
-		firstHttpReq *http.Request) (err error)
+	// 开启调度器。
+	// 调用该方法会使调度器创建和初始化各个组件。在此之后，调度器会激活爬取流程的执行。
+	// 参数channelArgs代表通道参数的容器。
+	// 参数poolBaseArgs代表池基本参数的容器。
+	// 参数crawlDepth代表了需要被爬取的网页的最大深度值。深度大于此值的网页会被忽略。
+	// 参数httpClientGenerator代表的是被用来生成HTTP客户端的函数。
+	// 参数respParsers的值应为分析器所需的被用来解析HTTP响应的函数的序列。
+	// 参数itemProcessors的值应为需要被置入条目处理管道中的条目处理器的序列。
+	// 参数firstHttpReq即代表首次请求。调度器会以此为起始点开始执行爬取流程。
+	Start(channelArgs base.ChannelArgs,
+	poolBaseArgs base.PoolBaseArgs,
+	crawlDepth uint32,
+	httpClientGenerator GenHttpClient,
+	respParsers []analyzer.ParseResponse,
+	itemProcessors []itempipeline.ProcessItem,
+	firstHttpReq *http.Request) (err error)
 	// 调用该方法会停止调度器的运行。所有处理模块执行的流程都会被中止。
 	Stop() bool
 	// 判断调度器是否正在运行。
@@ -69,8 +69,8 @@ type Scheduler interface {
 
 // 调度器的实现类型
 type myScheduler struct {
-	poolSize      uint32                        // 池的尺寸
-	channelLen    uint                          // 通道的总长度（也即容量）
+	channelArgs    base.ChannelArgs                          // 通道参数的容器
+	poolBaseArgs      base.PoolBaseArgs                        // 池基本参数的容器
 	crawlDepth    uint32                        // 爬取的最大深度，首次请求的深度为0
 	primaryDomain string                        // 主域名
 	chanman       middleware.ChannelManager     // 通道管理器
@@ -88,8 +88,8 @@ func NewScheduler() Scheduler {
 	return &myScheduler{}
 }
 
-func (sched *myScheduler) Start(channelLen uint,
-	poolSize uint32,
+func (sched *myScheduler) Start(channelArgs base.ChannelArgs,
+	poolBaseArgs base.PoolBaseArgs,
 	crawlDepth uint32,
 	httpClientGenerator GenHttpClient,
 	respParsers []analyzer.ParseResponse,
@@ -109,27 +109,27 @@ func (sched *myScheduler) Start(channelLen uint,
 	// 设置启动状态
 	atomic.StoreUint32(&sched.running, 1)
 	// 参数检查
-	if channelLen == 0 {
-		return errors.New("The channel max length (capacity) can not be 0!\n")
+	if err := channelArgs.Check(); err != nil {
+		return err
 	}
-	sched.channelLen = channelLen
-	if poolSize == 0 {
-		return errors.New("The pool size can not be 0!\n")
+	sched.channelArgs = channelArgs
+	if err := poolBaseArgs.Check(); err != nil {
+		return err
 	}
-	sched.poolSize = poolSize
+	sched.poolBaseArgs = poolBaseArgs
 	sched.crawlDepth = crawlDepth
 
-	sched.chanman = generateChannelManager(sched.channelLen)
+	sched.chanman = generateChannelManager(sched.channelArgs)
 	if httpClientGenerator == nil {
 		return errors.New("The HTTP client generator list is invalid!\n")
 	}
-	dlpool, err := generatePageDownloaderPool(sched.poolSize, httpClientGenerator)
+	dlpool, err := generatePageDownloaderPool(sched.poolBaseArgs.PageDownloaderPoolSize(), httpClientGenerator)
 	if err != nil {
 		errMsg := fmt.Sprintf("Occur error when get page downloader pool: %s\n", err)
 		return errors.New(errMsg)
 	}
 	sched.dlpool = dlpool
-	analyzerPool, err := generateAnalyzerPool(sched.poolSize)
+	analyzerPool, err := generateAnalyzerPool(sched.poolBaseArgs.AnalyzerPoolSize())
 	if err != nil {
 		errMsg := fmt.Sprintf("Occur error when get analyzer pool: %s\n", err)
 		return errors.New(errMsg)

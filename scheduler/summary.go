@@ -3,6 +3,7 @@ package scheduler
 import (
 	"bytes"
 	"fmt"
+	"webcrawler/base"
 )
 
 // 调度器摘要信息的接口类型。
@@ -35,8 +36,8 @@ func NewSchedSummary(sched *myScheduler, prefix string) SchedSummary {
 	return &mySchedSummary{
 		prefix:              prefix,
 		running:             sched.running,
-		channelLen:          sched.channelLen,
-		poolSize:            sched.poolSize,
+		channelArgs:         sched.channelArgs,
+		poolBaseArgs:        sched.poolBaseArgs,
 		crawlDepth:          sched.crawlDepth,
 		chanmanSummary:      sched.chanman.Summary(),
 		reqCacheSummary:     sched.reqCache.summary(),
@@ -53,21 +54,21 @@ func NewSchedSummary(sched *myScheduler, prefix string) SchedSummary {
 
 // 调度器摘要信息的实现类型。
 type mySchedSummary struct {
-	prefix              string // 前缀。
-	running             uint32 // 运行标记。
-	channelLen          uint   // 通道总长度
-	poolSize            uint32 // 池大小
-	crawlDepth          uint32 // 爬取的最大深度。
-	chanmanSummary      string // 通道管理器的摘要信息。
-	reqCacheSummary     string // 请求缓存的摘要信息。
-	dlPoolLen           uint32 // 网页下载器池的长度。
-	dlPoolCap           uint32 // 网页下载器池的容量。
-	analyzerPoolLen     uint32 // 分析器池的长度。
-	analyzerPoolCap     uint32 // 分析器池的容量。
-	itemPipelineSummary string // 条目处理管道的摘要信息。
-	urlCount            int    // 已请求的URL的计数。
-	urlDetail           string // 已请求的URL的详细信息。
-	stopSignSummary     string // 停止信号的摘要信息。
+	prefix              string            // 前缀。
+	running             uint32            // 运行标记。
+	channelArgs         base.ChannelArgs  // 通道参数的容器。
+	poolBaseArgs        base.PoolBaseArgs // 池基本参数的容器。
+	crawlDepth          uint32            // 爬取的最大深度。
+	chanmanSummary      string            // 通道管理器的摘要信息。
+	reqCacheSummary     string            // 请求缓存的摘要信息。
+	dlPoolLen           uint32            // 网页下载器池的长度。
+	dlPoolCap           uint32            // 网页下载器池的容量。
+	analyzerPoolLen     uint32            // 分析器池的长度。
+	analyzerPoolCap     uint32            // 分析器池的容量。
+	itemPipelineSummary string            // 条目处理管道的摘要信息。
+	urlCount            int               // 已请求的URL的计数。
+	urlDetail           string            // 已请求的URL的详细信息。
+	stopSignSummary     string            // 停止信号的摘要信息。
 }
 
 func (ss *mySchedSummary) String() string {
@@ -82,8 +83,8 @@ func (ss *mySchedSummary) Detail() string {
 func (ss *mySchedSummary) getSummary(detail bool) string {
 	prefix := ss.prefix
 	template := prefix + "Running: %v \n" +
-		prefix + "Channel length: %d \n" +
-		prefix + "Pool Size: %d \n" +
+		prefix + "Channel args: %s \n" +
+		prefix + "Pool base args: %s \n" +
 		prefix + "Crawl depth: %d \n" +
 		prefix + "Channels manager: %s \n" +
 		prefix + "Request cache: %s\n" +
@@ -96,8 +97,8 @@ func (ss *mySchedSummary) getSummary(detail bool) string {
 		func() bool {
 			return ss.running == 1
 		}(),
-		ss.channelLen,
-		ss.poolSize,
+		ss.channelArgs.String(),
+		ss.poolBaseArgs.String(),
 		ss.crawlDepth,
 		ss.chanmanSummary,
 		ss.reqCacheSummary,
@@ -132,8 +133,8 @@ func (ss *mySchedSummary) Same(other SchedSummary) bool {
 		ss.urlCount != otherSs.urlCount ||
 		ss.stopSignSummary != otherSs.stopSignSummary ||
 		ss.reqCacheSummary != otherSs.reqCacheSummary ||
-		ss.poolSize != otherSs.poolSize ||
-		ss.channelLen != otherSs.channelLen ||
+		ss.poolBaseArgs.String() != otherSs.poolBaseArgs.String() ||
+		ss.channelArgs.String() != otherSs.channelArgs.String() ||
 		ss.itemPipelineSummary != otherSs.itemPipelineSummary ||
 		ss.chanmanSummary != otherSs.chanmanSummary {
 		return false

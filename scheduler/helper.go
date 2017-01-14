@@ -6,13 +6,14 @@ import (
 	"regexp"
 	"strings"
 	anlz "webcrawler/analyzer"
+	"webcrawler/base"
 	dl "webcrawler/downloader"
 	ipl "webcrawler/itempipeline"
 	mdw "webcrawler/middleware"
 )
 
-func generateChannelManager(channelLen uint) mdw.ChannelManager {
-	return mdw.NewChannelManager(channelLen)
+func generateChannelManager(channelArgs base.ChannelArgs) mdw.ChannelManager {
+	return mdw.NewChannelManager(channelArgs)
 }
 
 func generatePageDownloaderPool(
