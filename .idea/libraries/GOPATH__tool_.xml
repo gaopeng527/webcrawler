@@ -1,0 +1,70 @@
+<component name="libraryTable">
+  <library name="GOPATH &lt;tool&gt;">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../golang.org" />
+      <root url="file://$PROJECT_DIR$/../TCPClient" />
+      <root url="file://$PROJECT_DIR$/../ParseXML" />
+      <root url="file://$PROJECT_DIR$/../labix.org" />
+      <root url="file://$PROJECT_DIR$/../EncodeAndDecode" />
+      <root url="file://$PROJECT_DIR$/../github.com" />
+      <root url="file://$PROJECT_DIR$/../UDPServer" />
+      <root url="file://$PROJECT_DIR$/../gotest" />
+      <root url="file://$PROJECT_DIR$/../File Processing" />
+      <root url="file://$PROJECT_DIR$/../gopkg.in" />
+      <root url="file://$PROJECT_DIR$/../Usebeedb(ORM)" />
+      <root url="file://$PROJECT_DIR$/../UseMongoDB" />
+      <root url="file://$PROJECT_DIR$/../MySQL" />
+      <root url="file://$PROJECT_DIR$/../TCPServer" />
+      <root url="file://$PROJECT_DIR$/../Regexp Processing" />
+      <root url="file://$PROJECT_DIR$/../Log Processing" />
+      <root url="file://$PROJECT_DIR$/../beeblog" />
+      <root url="file://$PROJECT_DIR$/../JSON Processing" />
+      <root url="file://$PROJECT_DIR$/../logs" />
+      <root url="file://$PROJECT_DIR$/../UDPClient" />
+      <root url="file://$PROJECT_DIR$/../CRWFile" />
+      <root url="file://$PROJECT_DIR$/../logging" />
+      <root url="file://$PROJECT_DIR$/../loadgen" />
+      <root url="file://$PROJECT_DIR$/../mymap" />
+      <root url="file://$PROJECT_DIR$/../set" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../golang.org" />
+      <root url="file://$PROJECT_DIR$/../TCPClient" />
+      <root url="file://$PROJECT_DIR$/../ParseXML" />
+      <root url="file://$PROJECT_DIR$/../labix.org" />
+      <root url="file://$PROJECT_DIR$/../EncodeAndDecode" />
+      <root url="file://$PROJECT_DIR$/../github.com" />
+      <root url="file://$PROJECT_DIR$/../UDPServer" />
+      <root url="file://$PROJECT_DIR$/../gotest" />
+      <root url="file://$PROJECT_DIR$/../File Processing" />
+      <root url="file://$PROJECT_DIR$/../gopkg.in" />
+      <root url="file://$PROJECT_DIR$/../Usebeedb(ORM)" />
+      <root url="file://$PROJECT_DIR$/../UseMongoDB" />
+      <root url="file://$PROJECT_DIR$/../MySQL" />
+      <root url="file://$PROJECT_DIR$/../TCPServer" />
+      <root url="file://$PROJECT_DIR$/../Regexp Processing" />
+      <root url="file://$PROJECT_DIR$/../Log Processing" />
+      <root url="file://$PROJECT_DIR$/../beeblog" />
+      <root url="file://$PROJECT_DIR$/../JSON Processing" />
+      <root url="file://$PROJECT_DIR$/../logs" />
+      <root url="file://$PROJECT_DIR$/../UDPClient" />
+      <root url="file://$PROJECT_DIR$/../CRWFile" />
+      <root url="file://$PROJECT_DIR$/../logging" />
+      <root url="file://$PROJECT_DIR$/../loadgen" />
+      <root url="file://$PROJECT_DIR$/../mymap" />
+      <root url="file://$PROJECT_DIR$/../set" />
+    </SOURCES>
+    <excluded>
+      <root url="file://$PROJECT_DIR$/tool" />
+      <root url="file://$PROJECT_DIR$/base" />
+      <root url="file://$PROJECT_DIR$/downloader" />
+      <root url="file://$PROJECT_DIR$/itempipeline" />
+      <root url="file://$PROJECT_DIR$/scheduler" />
+      <root url="file://$PROJECT_DIR$/analyzer" />
+      <root url="file://$PROJECT_DIR$" />
+      <root url="file://$PROJECT_DIR$/middleware" />
+      <root url="file://$PROJECT_DIR$/demo" />
+    </excluded>
+  </library>
+</component>
