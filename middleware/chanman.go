@@ -16,8 +16,6 @@ const (
 	CHANNEL_MANAGER_STATUS_CLOSED        ChannelManagerStatus = 2 // 已关闭状态。
 )
 
-var defaultChanLen uint = 1
-
 // 表示状态代码与状态名称之间的映射关系的字典
 var statusNameMap = map[ChannelManagerStatus]string{
 	CHANNEL_MANAGER_STATUS_UNINITIALIZED: "uninitialized",
@@ -34,9 +32,9 @@ var chanmanSummaryTemplate = "status: %s, " +
 // 通道管理器的接口类型
 type ChannelManager interface {
 	// 初始化通道管理器
-	// 参数channelLen代表通道管理器中的各类通道的初始长度
+	// 参数channelArgs代表通道参数的容器
 	// 参数reset指明是否重新初始化通道管理器
-	Init(channelLen uint, reset bool) bool
+	Init(channelArgs base.ChannelArgs, reset bool) bool
 	// 关闭通道管理器
 	Close() bool
 	// 获取请求传输通道
@@ -55,40 +53,37 @@ type ChannelManager interface {
 
 // 通道管理器的实现类型
 type myChannelManager struct {
-	channelLen uint                 // 通道的长度值
-	reqCh      chan base.Request    // 请求通道
-	respCh     chan base.Response   // 响应通道
-	itemCh     chan base.Item       // 条目通道
-	errorCh    chan error           // 错误通道
-	status     ChannelManagerStatus // 通道管理器的状态
-	rwmutex    sync.RWMutex         //读写锁
+	channelArgs base.ChannelArgs     // 通道参数的容器
+	reqCh       chan base.Request    // 请求通道
+	respCh      chan base.Response   // 响应通道
+	itemCh      chan base.Item       // 条目通道
+	errorCh     chan error           // 错误通道
+	status      ChannelManagerStatus // 通道管理器的状态
+	rwmutex     sync.RWMutex         //读写锁
 }
 
 // 创建通道管理器
 // 如果参数channelLen的值为0，那么它会由默认值替代
-func NewChannelManager(channelLen uint) ChannelManager {
-	if channelLen == 0 {
-		channelLen = defaultChanLen
-	}
+func NewChannelManager(channelArgs base.ChannelArgs) ChannelManager {
 	chanman := &myChannelManager{}
-	chanman.Init(channelLen, true)
+	chanman.Init(channelArgs, true)
 	return chanman
 }
 
-func (chanman *myChannelManager) Init(channelLen uint, reset bool) bool {
-	if channelLen == 0 {
-		panic(errors.New("The channel length is invalid!"))
+func (chanman *myChannelManager) Init(channelArgs base.ChannelArgs, reset bool) bool {
+	if err := channelArgs.Check(); err != nil {
+		panic(err)
 	}
 	chanman.rwmutex.Lock()
 	defer chanman.rwmutex.Unlock()
 	if chanman.status == CHANNEL_MANAGER_STATUS_INITIALIZED && !reset {
 		return false
 	}
-	chanman.channelLen = channelLen
-	chanman.reqCh = make(chan base.Request, channelLen)
-	chanman.respCh = make(chan base.Response, channelLen)
-	chanman.itemCh = make(chan base.Item, channelLen)
-	chanman.errorCh = make(chan error, channelLen)
+	chanman.channelArgs = channelArgs
+	chanman.reqCh = make(chan base.Request, channelArgs.ReqChanLen())
+	chanman.respCh = make(chan base.Response, channelArgs.RespChanLen())
+	chanman.itemCh = make(chan base.Item, channelArgs.ItemChanLen())
+	chanman.errorCh = make(chan error, channelArgs.ErrorChanLen())
 	chanman.status = CHANNEL_MANAGER_STATUS_INITIALIZED
 	return true
 }
@@ -169,8 +164,4 @@ func (chanman *myChannelManager) Summary() string {
 		len(chanman.itemCh), cap(chanman.itemCh),
 		len(chanman.errorCh), cap(chanman.errorCh))
 	return summary
-}
-
-func (chanman *myChannelManager) ChannelLen() uint {
-	return  chanman.channelLen
 }
